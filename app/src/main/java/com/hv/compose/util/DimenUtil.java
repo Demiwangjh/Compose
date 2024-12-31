@@ -1,6 +1,7 @@
 package com.hv.compose.util;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 
 public class DimenUtil {
 
@@ -26,6 +27,11 @@ public class DimenUtil {
     public static int px2dp(Context context, float pxValue) {
         float scale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (pxValue / scale + 0.5f);
+    }
+
+    public static int getScreenWidth(Context context){
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return displayMetrics.widthPixels;
     }
 
 }
