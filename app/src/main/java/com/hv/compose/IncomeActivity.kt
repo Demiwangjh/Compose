@@ -24,14 +24,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -50,7 +57,8 @@ import com.hv.compose.ui.theme.ComposeTheme
 import com.hv.compose.util.DimenUtil
 
 class IncomeActivity: ComponentActivity() {
-    private val mData = mutableListOf<UnionIncomeBean>()
+    //首先，将mutableListOf 改成mutableStateListOf，用于可记录数据状态
+    private val mData = mutableStateListOf<UnionIncomeBean>()
 
     override fun onCreate(saveInstanceState : Bundle?){
         super.onCreate(saveInstanceState)
@@ -133,10 +141,31 @@ class IncomeActivity: ComponentActivity() {
 
     @Composable
     fun setListData(){
+        //创建一个可记录状态的参数
+        val listState = rememberLazyListState()
+        //设置滑动监听事件
+        val scrollListener = remember {
+            object : NestedScrollConnection {
+                override fun onPostScroll(
+                    consumed: Offset,
+                    available: Offset,
+                    source: NestedScrollSource
+                ): Offset {
+                    //当第一条可见的下标 + 界面上一共可见的item数量 >总数量-2时，就去再获取下一页的数据
+                    //这里的判断基本表现为是滑动到倒数第三条时开始加载下一页
+                    if(listState.firstVisibleItemIndex+listState.layoutInfo.visibleItemsInfo.size>mData.size-2){
+                        getData()
+                    }
+                    return super.onPostScroll(consumed, available, source)
+                }
+            }
+        }
         LazyColumn(
             Modifier
                 .fillMaxSize()
                 .background(Color.Transparent)
+                .nestedScroll(scrollListener), //这里添加监听
+            state = listState //记录状态
         ) {
             //遍历数据列表
             items(mData.size) {
