@@ -29,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +60,9 @@ import com.hv.compose.util.DimenUtil
 class IncomeActivity: ComponentActivity() {
     //首先，将mutableListOf 改成mutableStateListOf，用于可记录数据状态
     private val mData = mutableStateListOf<UnionIncomeBean>()
+
+    private var isNoMoreDataShow = mutableStateOf(false)
+
 
     override fun onCreate(saveInstanceState : Bundle?){
         super.onCreate(saveInstanceState)
@@ -244,10 +248,27 @@ class IncomeActivity: ComponentActivity() {
                 }
 
             }
+
+            if(isNoMoreDataShow.value) { //当我们上面记录的状态为true，代表没有更多数据了
+                item {
+                    Box(Modifier.fillMaxWidth().height(40.dp)) {
+                        Text(
+                            text = "没有更多数据啦",
+                            modifier = Modifier.align(alignment = Alignment.Center),
+                            color = Color(0x99ffffff),
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            }
         }
     }
 
     fun getData(){
+        if(mData.size>=20){
+            isNoMoreDataShow.value =true
+            return
+        }
         for(i in 1..10){
             mData.add(UnionIncomeBean("https://img2.baidu.com/it/u=3565369971,2082314928&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=800","测试房间$i",1183301+i,
                 "9999$i","4444$i"))
