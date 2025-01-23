@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class TextObject {
     private String text;
-    private float textSize;
+    public float textSize;
     public float x;
     public float y;
     public float bw;
@@ -127,9 +127,7 @@ public class TextObject {
         }
 
     }
-    public float getTextSize() {
-        return textSize;
-    }
+
     public String getText() {
         return text;
     }

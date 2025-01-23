@@ -231,6 +231,7 @@ public class DrawingView extends View {
     public TextObject addTextObject(String text) {
         TextObject textObject = new TextObject(text, 80, 500, 500);
         textObjects.add(textObject);
+        textObject.setTemplateWhitebgBrown();
         invalidate();
         return textObject;
     }
